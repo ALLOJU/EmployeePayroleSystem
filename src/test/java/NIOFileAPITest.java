@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import bridgelabz.FileUtils;
+import bridgelabz.WatchService;
 
 public class NIOFileAPITest {
 
@@ -28,7 +29,7 @@ public class NIOFileAPITest {
 		// Create Directory
 		Files.createDirectory(playPath);
 		Assert.assertTrue(Files.exists(playPath));
-		
+
 		// create file
 		IntStream.range(1, 10).forEach(counter -> {
 			Path tempFile = Paths.get(playPath + "\\temp" + counter);
@@ -40,12 +41,17 @@ public class NIOFileAPITest {
 			}
 			Assert.assertTrue(Files.exists(tempFile));
 		});
-		
-		//List Files, Directories along with Files with extensions
-		Files.list(playPath).filter(Files::isRegularFile).forEach(System.out::println);
-        Files.newDirectoryStream(playPath).forEach(System.out::println);
-        Files.newDirectoryStream(playPath, path -> path.toFile().isFile() && path.toString().startsWith("temp"))
-        .forEach(System.out::println);
 
+		// List Files, Directories along with Files with extensions
+		Files.list(playPath).filter(Files::isRegularFile).forEach(System.out::println);
+		Files.newDirectoryStream(playPath).forEach(System.out::println);
+		Files.newDirectoryStream(playPath, path -> path.toFile().isFile() && path.toString().startsWith("temp"))
+				.forEach(System.out::println);
 	}
+	@Test
+    public void GivenDirectoryWhenWatched_ListsAllTheActivites() throws IOException {
+        Path dir = Paths.get(HOME + "/" + PLAY_WITH_NIO);
+        Files.list(dir).filter(Files::isRegularFile).forEach(System.out::println);
+        new WatchService(dir).processEvents();
+    }
 }
